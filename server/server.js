@@ -129,6 +129,18 @@ if (totalLinesChanged > 30) {
 } else {
     score += 55;
 }
+if (deleted > 5) {
+  score += 5;
+  reasons.push(
+    `Code deletion detected: ${deleted} lines were removed and should be reviewed.`
+  );
+}
+if (added > 30) {
+  score += 5;
+  reasons.push(
+    `Large amount of new code added: ${added} lines were introduced.`
+  );
+}
 for (const category in riskyCategories) {
   const keywords = riskyCategories[category];
 
