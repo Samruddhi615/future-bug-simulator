@@ -237,14 +237,29 @@ setFileResults(individualResults);
             </p>
 
 
-            <p>
-              PROJECTS
-            </p>
+
+<p
+  className={
+    activePage === "projects"
+      ? "active-nav"
+      : ""
+  }
+  onClick={() => setActivePage("projects")}
+>
+  PROJECTS
+</p>
 
 
-            <p>
-              SETTINGS
-            </p>
+            <p
+  className={
+    activePage === "settings"
+      ? "active-nav"
+      : ""
+  }
+  onClick={() => setActivePage("settings")}
+>
+  SETTINGS
+</p>
 
           </nav>
 
@@ -275,7 +290,7 @@ setFileResults(individualResults);
       <main className="main-content">
 
 
-        {activePage === "analyze" ? (
+       {activePage === "analyze" ? (
 
           <>
 
@@ -568,126 +583,217 @@ setFileResults(individualResults);
 
           </>
 
-        ) : (
+       ) : activePage === "projects" ? (
+
+  <section className="projects-page">
+
+    <p className="eyebrow">
+      CODE DIAGNOSTICS / 03
+    </p>
+
+    <h1>
+      PROJECTS_
+    </h1>
+
+    <div className="hero-line"></div>
+
+    <p className="hero-copy">
+      Manage the projects connected to
+      <br />
+      your code diagnostics.
+    </p>
+
+    <div className="projects-list">
+
+      <div className="project-card">
+
+        <div className="history-file">
+          <span className="file-marker"></span>
+
+          <div>
+            <strong>Future Bug Simulator</strong>
+
+            <small>
+              CODE CHANGE RISK ANALYSIS
+            </small>
+          </div>
+        </div>
+
+        <div className="history-risk">
+          <small>STATUS</small>
+          <strong>ACTIVE</strong>
+        </div>
+
+        <div className="history-score">
+          <small>TYPE</small>
+          <strong>WEB APP</strong>
+        </div>
+
+      </div>
+
+    </div>
+
+ </section>
 
 
-          /* ====================================
-             HISTORY PAGE
-          ==================================== */
 
-          <section className="history-page">
+) : activePage === "settings" ? (
 
+  <section className="settings-page">
 
-            <p className="eyebrow">
-              CODE DIAGNOSTICS / 02
-            </p>
+    <p className="eyebrow">
+      CODE DIAGNOSTICS / 04
+    </p>
 
+    <h1>
+      SETTINGS_
+    </h1>
 
-            <h1>
-              SCAN HISTORY_
-            </h1>
+    <div className="hero-line"></div>
 
+    <p className="hero-copy">
+      Configure how Future Bug Simulator
+      <br />
+      analyzes your code changes.
+    </p>
 
-            <div className="hero-line"></div>
+    <div className="settings-list">
 
+      <div className="setting-row">
+        <div>
+          <strong>RISK ANALYSIS</strong>
+          <small>Rule-based code change analysis</small>
+        </div>
 
-            <p className="hero-copy">
-              A record of the changes we've already
-              scanned.
-            </p>
+        <strong>ACTIVE</strong>
+      </div>
 
+      <div className="setting-row">
+        <div>
+          <strong>GIT INTEGRATION</strong>
+          <small>Analyze changes from the Git repository</small>
+        </div>
 
-            <div className="history-list">
+        <strong>ACTIVE</strong>
+      </div>
 
+      <div className="setting-row">
+        <div>
+          <strong>SCAN HISTORY</strong>
+          <small>Store previous scans in browser storage</small>
+        </div>
 
-              {history.length === 0 ? (
+        <strong>ACTIVE</strong>
+      </div>
 
-                <p className="empty-history">
-                  No scans yet. Run your first
-                  diagnostic.
-                </p>
+    </div>
 
-              ) : (
+  </section>
 
-                history.map(
-                  (scan, index) => (
+) : (
 
-                    <div
-                      className="history-row"
-                      key={index}
-                    >
+  // History page
 
+  <section className="history-page">
 
-                      <div className="history-file">
+    <p className="eyebrow">
+      CODE DIAGNOSTICS / 02
+    </p>
 
-                        <span className="file-marker"></span>
+    <h1>
+      SCAN HISTORY_
+    </h1>
 
+    <div className="hero-line"></div>
 
-                        <div>
+    <p className="hero-copy">
+      A record of the changes we've already
+      <br />
+      scanned.
+    </p>
 
-                          <strong>
-                            {Array.isArray(scan.fileName)
-                              ? scan.fileName.join(", ")
-                              : scan.fileName}
-                          </strong>
+    <div className="history-list">
 
-                          <small>
-                            CODE CHANGE SCAN
-                          </small>
+      {history.length === 0 ? (
 
-                        </div>
+        <p className="empty-history">
+          No scans yet. Run your first
+          <br />
+          diagnostic.
+        </p>
 
-                      </div>
+      ) : (
 
+        history.map((scan, index) => (
 
-                      <div className="history-risk">
+          <div
+            className="history-row"
+            key={index}
+          >
 
-                        <small>
-                          RISK
-                        </small>
+            <div className="history-file">
 
-                        <strong>
-                          {scan.risk}
-                        </strong>
+              <span className="file-marker"></span>
 
-                      </div>
+              <div>
 
+                <strong>
+                  {Array.isArray(scan.fileName)
+                    ? scan.fileName.join(", ")
+                    : scan.fileName}
+                </strong>
 
-                      <div className="history-score">
+                <small>
+                  CODE CHANGE SCAN
+                </small>
 
-                        <small>
-                          SCORE
-                        </small>
-
-                        <strong>
-                          {scan.score}/100
-                        </strong>
-
-                      </div>
-
-
-                      <div className="history-time">
-
-                        <small>
-                          {scan.time}
-                        </small>
-
-                      </div>
-
-
-                    </div>
-
-                  )
-                )
-
-              )}
+              </div>
 
             </div>
 
-          </section>
+            <div className="history-risk">
 
-        )}
+              <small>
+                RISK
+              </small>
 
+              <strong>
+                {scan.risk}
+              </strong>
+
+            </div>
+
+            <div className="history-score">
+
+              <small>
+                SCORE
+              </small>
+
+              <strong>
+                {scan.score}/100
+              </strong>
+
+            </div>
+
+            <div className="history-time">
+
+              <small>
+                {scan.time}
+              </small>
+
+            </div>
+
+          </div>
+
+        ))
+
+      )}
+
+    </div>
+
+  </section>
+
+)}
       </main>
 
     </div>
