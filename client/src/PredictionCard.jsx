@@ -1,6 +1,13 @@
+import { useState } from "react";
+
 function PredictionCard({ risk, score, reasons }) {
 
   const numericScore = Number(score) || 0;
+  const [showReport, setShowReport] = useState(false);
+  const actualReasons = (reasons || []).filter(
+  (reason) =>
+    !reason.includes("No major risk signals were detected")
+);
 
   const needleAngle = -90 + numericScore * 1.8;
 
@@ -85,7 +92,9 @@ function PredictionCard({ risk, score, reasons }) {
           <p className="score-label">
             RISK SCORE
           </p>
-
+            <p className="risk-signal-count">
+  {actualReasons.length} RISK SIGNALS DETECTED
+</p>
         </div>
 
       </div>
@@ -96,8 +105,8 @@ function PredictionCard({ risk, score, reasons }) {
           WHY THIS MATTERS
         </p>
 
-        {reasons && reasons.length > 0 ? (
-          reasons.map((reason, index) => (
+        {actualReasons.length > 0 ? (
+  reasons.map((reason, index) => (
             <div className="reason" key={index}>
               <span className="reason-mark"></span>
 
@@ -142,9 +151,45 @@ function PredictionCard({ risk, score, reasons }) {
           </div>
         )}
 
-        <button className="report-link">
-          VIEW FULL SCAN REPORT →
-        </button>
+        <button
+  className="report-link"
+  onClick={() => setShowReport(!showReport)}
+>
+  {showReport
+    ? "HIDE FULL SCAN REPORT ↑"
+    : "VIEW FULL SCAN REPORT →"}
+</button>
+{showReport && (
+  <div className="full-scan-report">
+
+    <div className="report-item">
+      <span>RISK LEVEL</span>
+      <strong>{risk}</strong>
+    </div>
+
+    <div className="report-item">
+      <span>RISK SCORE</span>
+      <strong>{numericScore}/100</strong>
+    </div>
+
+    <div className="report-item">
+      <span>RISK SIGNALS</span>
+      <strong>{actualReasons.length}</strong>
+    </div>
+
+    <div className="report-item">
+      <span>STATUS</span>
+      <strong>
+        {risk === "HIGH"
+          ? "REVIEW REQUIRED"
+          : risk === "MEDIUM"
+          ? "REVIEW RECOMMENDED"
+          : "LOW CONCERN"}
+      </strong>
+    </div>
+
+  </div>
+)}
 
       </div>
 

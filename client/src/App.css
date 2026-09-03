@@ -632,3 +632,40 @@ body {
   font-size: 12px;
   letter-spacing: 0.1em;
 }
+/* ==========================================
+   RISK SIGNAL COUNT
+========================================== */
+
+.risk-signal-count {
+  margin-top: 8px;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+/* ==========================================
+   FULL SCAN REPORT
+========================================== */
+
+.full-scan-report {
+  margin-top: 28px;
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
+}
+
+.report-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.report-item span {
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  opacity: 0.55;
+}
+
+.report-item strong {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
