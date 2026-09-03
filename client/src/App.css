@@ -559,3 +559,76 @@ body {
 .history-score {
   text-align: right;
 }
+/* ==========================================
+   PROJECTS PAGE
+========================================== */
+
+.projects-page {
+  width: 100%;
+}
+
+.projects-list {
+  margin-top: 48px;
+}
+
+.project-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.project-card .history-file {
+  flex: 1;
+}
+
+.project-card .history-risk,
+.project-card .history-score {
+  min-width: 100px;
+}
+
+
+/* ==========================================
+   SETTINGS PAGE
+========================================== */
+
+.settings-page {
+  width: 100%;
+}
+
+.settings-list {
+  margin-top: 48px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 30px;
+  padding: 24px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.setting-row:last-child {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.setting-row div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-row small {
+  opacity: 0.5;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+}
+
+.setting-row > strong {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+}
