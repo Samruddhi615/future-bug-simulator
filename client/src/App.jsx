@@ -65,6 +65,11 @@ function App() {
 }
 
       const fileDiffs = gitData.files || [];
+      if (fileDiffs.length === 0) {
+  throw new Error(
+    "No file changes found in the Git diff."
+  );
+}
 
       console.log("Changed files:", changedFiles);
       console.log("File diffs:", fileDiffs);
