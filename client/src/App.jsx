@@ -58,6 +58,11 @@ function App() {
       // ----------------------------------------
 
       const changedFiles = gitData.fileNames || [];
+      if (changedFiles.length === 0) {
+  throw new Error(
+    "No uncommitted code changes found. Make a change and try again."
+  );
+}
 
       const fileDiffs = gitData.files || [];
 
