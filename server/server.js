@@ -14,11 +14,17 @@ app.use(cors());
 
 const riskyCategories = {
   security: ["password", "login", "auth"],
-  payment: ["payment", "transaction", "checkout"],
+  payment: [
+    "paymentgateway",
+    "processpayment(",
+    "createpayment(",
+    "charge(",
+    "transaction.",
+    "checkout("
+  ],
   database: ["database", "sql", "query"],
-  api: ["api", "fetch", "request"]
+  api: ["fetch(", "axios", "http://", "https://"]
 };
-
 
 // ==========================================
 // FILE NAME CATEGORIES
@@ -238,21 +244,15 @@ app.post("/api/analyze", (req, res) => {
     const keywords = riskyCategories[category];
 
 
-    // ----------------------------------------
+   
     // Filename detection
-    // ----------------------------------------
+  
 
     const detectedByFileName =
       matchedFileCategories.includes(category);
 
 
-    // ----------------------------------------
-    // Keyword detection
-    //
-    // Do not scan server.js for keywords
-    // because server.js contains the risk
-    // analyzer's own category definitions.
-    // ----------------------------------------
+
 
     let detectedByCode = false;
 
@@ -261,17 +261,9 @@ app.post("/api/analyze", (req, res) => {
       !analyzerFileChanged
     ) {
 
-      detectedByCode = keywords.some(keyword => {
-
-        const keywordPattern = new RegExp(
-          `\\b${keyword}\\b`,
-          "i"
-        );
-
-        return keywordPattern.test(lowerCaseAddedCode);
-
-      });
-
+      detectedByCode = keywords.some(keyword =>
+  lowerCaseAddedCode.includes(keyword.toLowerCase())
+);
     }
 
 
@@ -280,10 +272,7 @@ app.post("/api/analyze", (req, res) => {
       detectedByCode;
 
 
-    // ----------------------------------------
-    // Add category risk
-    // ----------------------------------------
-
+    
     if (categoryDetected) {
 
       score += categoryWeights[category] || 0;
@@ -322,9 +311,6 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
-  // TEST STATUS
-  // ==========================================
 
   if (testsPassed === false) {
 
@@ -337,9 +323,7 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
-  // PREVIOUS BUG HISTORY
-  // ==========================================
+ 
 
   const bugCount = Number(previousBugs) || 0;
 
@@ -354,18 +338,14 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
-  // LIMIT SCORE TO 100
-  // ==========================================
+ 
 
   if (score > 100) {
     score = 100;
   }
 
 
-  // ==========================================
-  // DETERMINE RISK LEVEL
-  // ==========================================
+ 
 
   let risk = "LOW";
 
@@ -380,9 +360,7 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
-  // DEFAULT REASON
-  // ==========================================
+  
 
   if (reasons.length === 0) {
 
@@ -393,9 +371,7 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
-  // SEND RESULT
-  // ==========================================
+ 
 
   res.json({
 
@@ -418,9 +394,7 @@ app.post("/api/analyze", (req, res) => {
 });
 
 
-// ==========================================
-// GIT DIFF ENDPOINT
-// ==========================================
+
 
 app.get("/api/git-diff", (req, res) => {
 
@@ -435,10 +409,8 @@ app.get("/api/git-diff", (req, res) => {
     }
 
 
-    // ----------------------------------------
-    // Extract changed filenames
-    // ----------------------------------------
-
+    
+    
     const fileNameMatches = [
       ...stdout.matchAll(
         /^diff --git a\/(.+?) b\/.+$/gm
@@ -451,18 +423,35 @@ app.get("/api/git-diff", (req, res) => {
     );
 
 
-    // ----------------------------------------
-    // Return diff + filenames
-    // ----------------------------------------
+    
+    const fileDiffs = stdout
+  .split(/^diff --git /gm)
+  .filter(section => section.trim() !== "")
+  .map(section => {
 
-    res.json({
+    const firstLine = section.split("\n")[0];
 
-      fileNames,
+    const match = firstLine.match(
+      /a\/(.+?) b\/(.+)$/
+    );
 
-      diff: stdout
+    return {
+      fileName: match ? match[2] : "unknown",
+      diff: "diff --git " + section
+    };
 
-    });
+  });
 
+
+res.json({
+
+  fileNames,
+
+  diff: stdout,
+
+  files: fileDiffs
+
+});
   });
 
 });
