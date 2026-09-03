@@ -25,14 +25,17 @@ useEffect(() => {
   
 
   const handleAnalyze = async () => {
+    const gitResponse = await fetch("http://localhost:5000/api/git-diff");
+const gitData = await gitResponse.json();
+setFileName(gitData.fileNames.join(","));
     const response = await fetch("http://localhost:5000/api/analyze", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        fileName,
-        codeDiff,
+        fileName: gitData.fileNames.join(","),
+        codeDiff: gitData.diff,
         previousBugs,
         testsPassed,
       }),
@@ -45,7 +48,7 @@ console.log("Tests passed:", testsPassed);
     setReasons(data.reasons);
     setHistory((previousHistory)=>[
       {
-      fileName:fileName,
+      fileName:gitData.fileNames,
       risk:data.risk,
       score:data.score,
       time: new Date().toLocaleString(),

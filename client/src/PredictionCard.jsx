@@ -105,15 +105,27 @@ function PredictionCard({ risk, score, reasons }) {
                 <h3>{reason}</h3>
 
                 <p>
-                  {index === 0 &&
-                    "History is one of the strongest signals we have."}
+                  {reason.includes("Bug history") &&
+                  "Previous bugs in this area increase the need for review."}
 
-                  {index === 1 &&
-                    "More surface area means more places for things to break."}
+                  {reason.includes("Large code change") &&
+                  "More changed lines create more surface area for potential issues."}
 
-                  {index === 2 &&
-                    "Removing code can introduce unexpected side effects."}
-                </p>
+                  {reason.includes("Tests failed") &&
+                  "Failed tests indicate that this change may have introduced unexpected behavior."}
+
+                  {reason.includes("Security-sensitive") &&
+                  "Authentication and credential-related changes require additional review."}
+
+                  {reason.includes("Payment-related") &&
+                  "Financial transaction logic should receive additional review before shipping."}
+
+                  {reason.includes("Database-related") &&
+                  "Database access and query changes can affect data integrity and application behavior."}
+
+                  {reason.includes("API-related") &&
+                  "Request and service communication changes can affect dependent systems."}
+                  </p>
               </div>
             </div>
           ))

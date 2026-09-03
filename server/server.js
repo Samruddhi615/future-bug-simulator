@@ -1,17 +1,38 @@
 const express=require("express");
 const cors =require("cors");
+const { exec } = require("child_process");
 const app=express();
 app.use(express.json());
 app.use(cors());
 app.get("/",(req,res)=>{
-    res.send("Future Bug Simulator Server is running");
+    res.send("Future Bug Simulator Server is running successfully");
 });
-app.get("/api/test",(req,res)=>{
-    res.json({
-        message:"Future Bug Simulator is working!"
-    })
+app.get("/api/test", (req,res)=>{
+  res.json({
+    message:"Future Bug Simulator is working!"
+  });
+});
 
+app.get("/api/git-diff", (req, res) => {
+  exec("git diff", (error, stdout, stderr) => {
+    if (error) {
+      return res.status(500).json({
+        error: "Failed to get Git diff"
+      });
+    }
+
+    const fileNameMatches = [
+      ...stdout.matchAll(/^diff --git a\/(.+?) b\/.+$/gm)
+    ];
+    const fileNames = fileNameMatches.map(match => match[1]);
+
+    res.json({
+      fileNames: fileNames,
+      diff: stdout
+    });
+  });
 });
+
 app.post("/api/analyze",(req,res)=>{
     const {
   fileName,
@@ -40,15 +61,23 @@ const fileCategories = {
 
 const lines = codeDiff.split("\n");
 const lowerCaseDiff = codeDiff.toLowerCase();
-const lowerCaseFileName = fileName.toLowerCase();
+
+const fileNameList = Array.isArray(fileName)
+  ? fileName
+  : [fileName || ""];
+
+const lowerCaseFileNames = fileNameList.map(name =>
+  name.toLowerCase()
+);
+
 const matchedFileCategories = [];
 
 for (const category in fileCategories) {
   const fileKeywords = fileCategories[category];
 
   if (fileKeywords.some(keyword =>
-    lowerCaseFileName.includes(keyword)
-  )) {
+  lowerCaseFileNames.some(name => name.includes(keyword))
+)) {
     matchedFileCategories.push(category);
   }
 }
@@ -101,30 +130,32 @@ if (totalLinesChanged > 30) {
     score += 55;
 }
 for (const category in riskyCategories) {
-const keywords = riskyCategories[category];
+  const keywords = riskyCategories[category];
 
-for(const keyword of keywords){
- if (
-  matchedFileCategories.includes(category) ||
-  (matchedFileCategories.length === 0 && lowerCaseDiff.includes(keyword))
-) {
+  const categoryDetected =
+    matchedFileCategories.includes(category) ||
+    (
+      matchedFileCategories.length === 0 &&
+      keywords.some(keyword => lowerCaseDiff.includes(keyword))
+    );
+
+  if (categoryDetected) {
     score += category === "security" ? 15 : 10;
+
     detectedCategories.push(category);
 
-reasons.push(
-  category === "security"
-  ? "Security-sensitive change detected. Authentication or credential-related code was modified."
-  : category === "payment"
-  ? "Payment-related change detected. Financial transaction code should receive additional review."
-  : category === "database"
-? "Database-related change detected. Data access or query logic should receive additional review."
-: category === "api"
-? "API-related change detected. Request or service communication logic should receive additional review."
-: `Risky area detected: ${category}.`
-);
-    break;
+    reasons.push(
+      category === "security"
+        ? "Security-sensitive change detected. Authentication or credential-related code was modified."
+        : category === "payment"
+        ? "Payment-related change detected. Financial transaction code should receive additional review."
+        : category === "database"
+        ? "Database-related change detected. Data access or query logic should receive additional review."
+        : category === "api"
+        ? "API-related change detected. Request or service communication logic should receive additional review."
+        : `Risky area detected: ${category}.`
+    );
   }
-}
 }
 if(testsPassed==false){
     score+=10;
