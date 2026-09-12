@@ -4,7 +4,6 @@ import "./App.css";
 
 function App() {
   const [fileName, setFileName] = useState("");
-  const [codeDiff, setCodeDiff] = useState("");
   const [previousBugs, setPreviousBugs] = useState("");
   const [testsPassed, setTestsPassed] = useState(true);
 
@@ -27,6 +26,7 @@ function App() {
   useEffect(() => {
     localStorage.setItem("history", JSON.stringify(history));
   }, [history]);
+ 
 
 
   // ==========================================
@@ -73,18 +73,19 @@ function App() {
 
       console.log("Changed files:", changedFiles);
       console.log("File diffs:", fileDiffs);
+      
 
 
-      // ----------------------------------------
+      
       // Update file name in UI
-      // ----------------------------------------
+    
 
       setFileName(changedFiles.join(","));
 
 
-      // ----------------------------------------
+      
       // Analyze the Git diff
-      // ----------------------------------------
+      
 
       const response = await fetch(
         "http://localhost:5000/api/analyze",
@@ -97,7 +98,7 @@ function App() {
 
           body: JSON.stringify({
             fileName: changedFiles,
-            codeDiff: gitData.diff || codeDiff,
+            codeDiff: gitData.diff || "",
             previousBugs,
             testsPassed,
           }),
@@ -151,18 +152,18 @@ setFileResults(individualResults);
       );
 
 
-      // ----------------------------------------
+      
       // Update prediction
-      // ----------------------------------------
+      
 
       setRisk(data.risk);
       setScore(data.score);
       setReasons(data.reasons || []);
 
 
-      // ----------------------------------------
+    
       // Save scan to history
-      // ----------------------------------------
+      
 
       setHistory((previousHistory) => [
         {
@@ -201,6 +202,7 @@ setFileResults(individualResults);
       {/* ======================================
           SIDEBAR
       ====================================== */}
+      
 
       <aside className="sidebar">
 
@@ -334,21 +336,9 @@ setFileResults(individualResults);
             <section className="scan-form">
 
 
-              <div className="field diff-field">
+              
 
-                <label>
-                  CODE DIFF
-                </label>
-
-                <textarea
-                  value={codeDiff}
-                  placeholder="Paste code changes here..."
-                  onChange={(event) =>
-                    setCodeDiff(event.target.value)
-                  }
-                />
-
-              </div>
+              
 
 
               <div className="field">

@@ -8,9 +8,9 @@ app.use(express.json());
 app.use(cors());
 
 
-// ==========================================
+
 // RISK CATEGORIES
-// ==========================================
+
 
 const riskyCategories = {
   security: ["password", "login", "auth"],
@@ -26,9 +26,9 @@ const riskyCategories = {
   api: ["fetch(", "axios", "http://", "https://"]
 };
 
-// ==========================================
+
 // FILE NAME CATEGORIES
-// ==========================================
+
 
 const fileCategories = {
   security: ["auth", "login", "security"],
@@ -38,10 +38,8 @@ const fileCategories = {
 };
 
 
-// ==========================================
-// CATEGORY WEIGHTS
-// ==========================================
 
+// CATEGORY WEIGHTS
 const categoryWeights = {
   security: 20,
   payment: 15,
@@ -50,11 +48,12 @@ const categoryWeights = {
 };
 
 
-// ==========================================
+
 // ANALYZE CODE CHANGE
-// ==========================================
+
 
 app.post("/api/analyze", (req, res) => {
+  console.log("ANALYZE endpoint hit");
 
   const {
     fileName,
@@ -64,18 +63,14 @@ app.post("/api/analyze", (req, res) => {
   } = req.body;
 
 
-  // ------------------------------------------
-  // Prepare diff
-  // ------------------------------------------
+  
 
   const diff = codeDiff || "";
 
   const lines = diff.split("\n");
 
 
-  // ------------------------------------------
-  // Count added and deleted lines
-  // ------------------------------------------
+  
 
   let added = 0;
   let deleted = 0;
@@ -102,9 +97,9 @@ app.post("/api/analyze", (req, res) => {
   const totalLinesChanged = added + deleted;
 
 
-  // ------------------------------------------
+  
   // Prepare filenames
-  // ------------------------------------------
+ 
 
   const fileNameList = Array.isArray(fileName)
     ? fileName
@@ -116,9 +111,9 @@ app.post("/api/analyze", (req, res) => {
   );
 
 
-  // ==========================================
+ 
   // DETECT CATEGORIES FROM FILE NAMES
-  // ==========================================
+
 
   const matchedFileCategories = [];
 
@@ -139,9 +134,9 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
+ 
   // GET ONLY ADDED CODE
-  // ==========================================
+  
 
   const addedLines = lines
     .filter(line =>
@@ -155,37 +150,44 @@ app.post("/api/analyze", (req, res) => {
 
 
   const lowerCaseAddedCode = addedLines.toLowerCase();
+  
 
 
-  // ==========================================
+  
   // CHECK IF ANALYZER ITSELF WAS MODIFIED
-  // ==========================================
-
+ 
   const analyzerFileChanged = lowerCaseFileNames.some(name =>
     name.endsWith("server.js")
   );
 
 
-  // ==========================================
+  
   // RISK REASONS
-  // ==========================================
+
 
   const reasons = [];
 
   const detectedCategories = [];
+  if (
+  lowerCaseAddedCode.includes("todo") ||
+  lowerCaseAddedCode.includes("fixme")
+) {
+  reasons.push(
+    "TODO/FIXME detected in new code. This change may contain unfinished work."
+  );
+}
 
 
-  // ==========================================
+  
   // BASE SCORE
-  // ==========================================
+  
 
   let score = 30;
 
 
-  // ==========================================
+ 
   // CHANGE SIZE RISK
-  // ==========================================
-
+  
   if (totalLinesChanged <= 10) {
 
     score += 10;
@@ -205,9 +207,9 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
+  
   // CODE DELETION RISK
-  // ==========================================
+
 
   if (deleted > 5) {
 
@@ -220,9 +222,9 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
+ 
   // LARGE CODE ADDITION RISK
-  // ==========================================
+  
 
   if (added > 30) {
 
@@ -235,9 +237,8 @@ app.post("/api/analyze", (req, res) => {
   }
 
 
-  // ==========================================
+  
   // RISK CATEGORY DETECTION
-  // ==========================================
 
   for (const category in riskyCategories) {
 
@@ -256,15 +257,12 @@ app.post("/api/analyze", (req, res) => {
 
     let detectedByCode = false;
 
-    if (
-      matchedFileCategories.length === 0 &&
-      !analyzerFileChanged
-    ) {
+   
 
       detectedByCode = keywords.some(keyword =>
   lowerCaseAddedCode.includes(keyword.toLowerCase())
 );
-    }
+  
 
 
     const categoryDetected =
@@ -398,7 +396,7 @@ app.post("/api/analyze", (req, res) => {
 
 app.get("/api/git-diff", (req, res) => {
 
-  exec("git diff", (error, stdout, stderr) => {
+  exec("git -C .. diff", (error, stdout, stderr) => {
 
     if (error) {
 
@@ -457,9 +455,8 @@ res.json({
 });
 
 
-// ==========================================
+
 // START SERVER
-// ==========================================
 
 app.listen(5000, () => {
 

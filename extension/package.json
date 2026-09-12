@@ -1,0 +1,27 @@
+{
+  "name": "future-bug-simulator",
+  "displayName": "Future Bug Simulator",
+  "description": "Analyze code changes and estimate future bug risk.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./extension.js",
+  "activationEvents": [
+    "onCommand:futureBugSimulator.analyze"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "futureBugSimulator.analyze",
+        "title": "Future Bug Simulator: Analyze Code Change"
+      }
+    ]
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0"
+  }
+}
