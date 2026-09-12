@@ -1,6 +1,7 @@
 {
   "name": "future-bug-simulator",
   "displayName": "Future Bug Simulator",
+  "publisher": "future-bug-simulator",
   "description": "Analyze code changes and estimate future bug risk.",
   "version": "0.0.1",
   "engines": {
